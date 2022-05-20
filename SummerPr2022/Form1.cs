@@ -22,14 +22,14 @@ namespace SummerPr2022
         }
         protected override void OnLoad(EventArgs e)
         {
-            zedGrapgControl1.Location = new Point(10, 30);
+            zedGrapgControl1.Location = new Point(8, 30);
             zedGrapgControl1.Name = "text";
             zedGrapgControl1.Size = new Size(500, 500);
             Controls.Add(zedGrapgControl1);
             GraphPane my_Pane = zedGrapgControl1.GraphPane;
             my_Pane.Title.Text = "График функции";
-            my_Pane.XAxis.Title.Text = " X";
-            my_Pane.YAxis.Title.Text = " Y";
+            my_Pane.XAxis.Title.Text = "X";
+            my_Pane.YAxis.Title.Text = "Y";
         }
         private void GetSize()
         {
@@ -38,33 +38,29 @@ namespace SummerPr2022
         }
         static double f(double x)
         {
-            //return ()/Math.Exp(y)
+            //return ()/()
             return Math.Sqrt(Math.Sin(x) + Math.Exp(-1 * Math.Sin(x))); //решение вручную
         }
         static double f1(double x, double y)
         {
-            //return ()
-            return ((((Math.Cos(x) * (1 + Math.Sin(x))) / y) - (y * Math.Cos(x))) / 2);
+            return (3 * x * x) / (x * x * x + y + 1);
         }
         private void Eiler(ZedGraphControl Zed_GraphControl)
         {
+            try
+            {
                 GraphPane my_Pane = Zed_GraphControl.GraphPane;
                 PointPairList list = new PointPairList();
                 PointPairList list_1 = new PointPairList();
 
                 double m = -1;
 
-                double y = 1;
-                double x = 0;
+                double y = 2;
+                double x = 1;
 
                 double a = 0;
 
                 double n = Convert.ToDouble(textBox1.Text);
-
-                if (textBox1.Text==null)
-                {
-                    throw new Exception("Вы не ввели колличество итераций!");
-                }
 
                 double h = 1 / n;
 
@@ -85,7 +81,11 @@ namespace SummerPr2022
                 zedGrapgControl1.Invalidate();
                 label1.BackColor = Color.White;
                 label1.Text = Convert.ToString("Максимальная невязка:\n " + m);
-           
+            }
+            catch
+            {
+                MessageBox.Show("Вы не ввели количество иттераций!");
+            }
         }
         private void GriddenOn(GraphPane my_Pane)
         {
@@ -120,6 +120,16 @@ namespace SummerPr2022
         {
             Clear(zedGrapgControl1);
             label1.BackColor = Color.Maroon;
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
