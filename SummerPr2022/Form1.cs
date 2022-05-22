@@ -13,8 +13,9 @@ namespace SummerPr2022
 {
     public partial class Form1 : Form
     {
-        public string eyler = "Метод Эйлера";
-        public string exsol = "Точное решение";
+        public int n;
+        public int a = 1, b = 2;
+        const double x0 = 1, y0 = 0, minX = 1, maxX = 2;
         ZedGraphControl zedGrapgControl1 = new ZedGraphControl();
         public Form1()
         {
@@ -27,7 +28,7 @@ namespace SummerPr2022
             zedGrapgControl1.Size = new Size(500, 500);
             Controls.Add(zedGrapgControl1);
             GraphPane my_Pane = zedGrapgControl1.GraphPane;
-            my_Pane.Title.Text = "График функции";
+            my_Pane.Title.Text = "Результат:";
             my_Pane.XAxis.Title.Text = "X";
             my_Pane.YAxis.Title.Text = "Y";
         }
@@ -36,56 +37,91 @@ namespace SummerPr2022
             zedGrapgControl1.Location = new Point(10, 10);
             zedGrapgControl1.Size = new Size(ClientRectangle.Width - 20, ClientRectangle.Height - 20);
         }
-        static double f(double x)
+        protected override void OnSizeChanged(EventArgs e)
         {
-            //return ()/()
-            return Math.Sqrt(Math.Sin(x) + Math.Exp(-1 * Math.Sin(x))); //решение вручную
+            GetSize();
         }
-        static double f1(double x, double y)
+
+        private void Clear(ZedGraphControl Zed_GraphControl)
+        {
+            zedGrapgControl1.GraphPane.CurveList.Clear();
+            zedGrapgControl1.GraphPane.GraphObjList.Clear();
+
+            zedGrapgControl1.GraphPane.XAxis.Type = AxisType.Linear;
+            zedGrapgControl1.GraphPane.XAxis.Scale.TextLabels = null;
+            zedGrapgControl1.GraphPane.XAxis.MajorGrid.IsVisible = false;
+            zedGrapgControl1.GraphPane.YAxis.MajorGrid.IsVisible = false;
+            zedGrapgControl1.GraphPane.YAxis.MinorGrid.IsVisible = false;
+            zedGrapgControl1.GraphPane.XAxis.MinorGrid.IsVisible = false;
+            zedGrapgControl1.RestoreScale(zedGrapgControl1.GraphPane);
+
+            zedGrapgControl1.AxisChange();
+            zedGrapgControl1.Invalidate();
+        }
+
+        static double f1(double x, double y)//Исходное дифференциальное уравнение
         {
             return (3 * x * x) / (x * x * x + y + 1);
         }
-        private void Eiler(ZedGraphControl Zed_GraphControl)
+        static double f2(double y)//Точное решение задачи Коши 
         {
+            return Math.Pow(3 * Math.Exp(y) - y - 2, 1.0 / 3.0);
+        }
+
+        private void Eiler(ZedGraphControl Zed_GraphControl)//сам метод ломанных Эйлера
+        {
+            GraphPane my_Pane = Zed_GraphControl.GraphPane;
+            PointPairList list = new PointPairList();
             try
             {
-                GraphPane my_Pane = Zed_GraphControl.GraphPane;
-                PointPairList list = new PointPairList();
-                PointPairList list_1 = new PointPairList();
-
-                double m = -1;
-
-                double y = 2;
-                double x = 1;
-
-                double a = 0;
-
-                double n = Convert.ToDouble(textBox1.Text);
-
-                double h = 1 / n;
-
-                for (double i = 0; i <= n; i++)
+                n = Convert.ToInt32(textBox1.Text);
+                double maxNev, curNev, h, x, y;
+                int i;
+                maxNev = 0; curNev = maxNev;
+                x = 1; y = 0;
+                h = (double)(b - a) / n;
+                for (i = 0; i < n + 1; i++)
                 {
-                    list_1.Add(a + h * i, f(a + h * i));
-
                     list.Add(x, y);
-                    y = y + h * f1(x, y);
+                    curNev = Math.Abs((y + h * f1(x, y)) - f2(y));
+                    if (curNev > maxNev)
+                    {
+                        maxNev = curNev;
+
+                    }
+                    y += h * f1(x, y);
                     x += h;
-
-                    if (Math.Abs(y - f(a + h * i)) > m) m = Math.Abs(y - f(a + h * i));
                 }
+                PointPairList listMIN = new PointPairList();
+                PointPairList listMAX = new PointPairList();
 
-                LineItem myCircle_1 = my_Pane.AddCurve(exsol, list_1, Color.Red, SymbolType.Circle);
-                LineItem myCircle = my_Pane.AddCurve(eyler, list, Color.Maroon, SymbolType.Circle);
+                LineItem d1 = my_Pane.AddCurve("Результат метода Эйлера", list, Color.Blue, SymbolType.Circle);
+                textBox2.Text = maxNev.ToString();
                 zedGrapgControl1.AxisChange();
                 zedGrapgControl1.Invalidate();
-                label1.BackColor = Color.White;
-                label1.Text = Convert.ToString("Максимальная невязка:\n " + m);
             }
             catch
             {
-                MessageBox.Show("Вы не ввели количество иттераций!");
+                MessageBox.Show("Некорректный ввод данных.");
             }
+        }
+        private void Rez(ZedGraphControl Zed_GraphControl)//Построение графика точного решения
+        {     
+            int i;
+            double h1 = (double)(2.33 - a)/100D;
+            double[] coorX = new double[100 + 1];
+            double[] coorY = new double[100 + 1];
+            GraphPane my_Pane = Zed_GraphControl.GraphPane;
+            PointPairList list2 = new PointPairList();
+            for (i = 0; i < 100 + 1; i++)
+            {
+                coorY[i] = 0 + i * h1;
+                coorX[i] = f2(coorY[i]);
+                list2.Add(coorX[i], coorY[i]);
+            }
+            LineItem myCircle = my_Pane.AddCurve("Точное решение", list2, Color.Red, SymbolType.Circle);
+            zedGrapgControl1.AxisChange();
+            zedGrapgControl1.Invalidate();
         }
         private void GriddenOn(GraphPane my_Pane)
         {
@@ -94,42 +130,21 @@ namespace SummerPr2022
             my_Pane.YAxis.MinorGrid.IsVisible = true;
             my_Pane.XAxis.MinorGrid.IsVisible = true;
         }
-        private void Clear(ZedGraphControl Zed_GraphControl)
-        {
-            zedGrapgControl1.GraphPane.CurveList.Clear();
-            zedGrapgControl1.GraphPane.GraphObjList.Clear();
-            zedGrapgControl1.GraphPane.XAxis.Type = AxisType.Linear;
-            zedGrapgControl1.GraphPane.XAxis.Scale.TextLabels = null;
-            zedGrapgControl1.GraphPane.XAxis.MajorGrid.IsVisible = false;
-            zedGrapgControl1.GraphPane.YAxis.MajorGrid.IsVisible = false;
-            zedGrapgControl1.GraphPane.YAxis.MinorGrid.IsVisible = false;
-            zedGrapgControl1.GraphPane.XAxis.MinorGrid.IsVisible = false;
-            zedGrapgControl1.RestoreScale(zedGrapgControl1.GraphPane);
-            zedGrapgControl1.AxisChange();
-            zedGrapgControl1.Invalidate();
-        }
-
-
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)//Эйлер
         {
             GriddenOn(zedGrapgControl1.GraphPane);
             Eiler(zedGrapgControl1);
         }
-
-        private void button2_Click(object sender, EventArgs e)
+        private void button3_Click_1(object sender, EventArgs e)//точное
+        {
+            GriddenOn(zedGrapgControl1.GraphPane);
+            Rez(zedGrapgControl1);
+        }
+        private void button2_Click(object sender, EventArgs e)//чистка
         {
             Clear(zedGrapgControl1);
-            label1.BackColor = Color.Maroon;
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
+            GriddenOn(zedGrapgControl1.GraphPane);
         }
     }
 }
+
