@@ -15,7 +15,6 @@ namespace SummerPr2022
     {
         public int n;
         public int a = 1, b = 2;
-        const double x0 = 1, y0 = 0, minX = 1, maxX = 2;
         ZedGraphControl zedGrapgControl1 = new ZedGraphControl();
         public Form1()
         {
@@ -54,7 +53,6 @@ namespace SummerPr2022
             zedGrapgControl1.GraphPane.YAxis.MinorGrid.IsVisible = false;
             zedGrapgControl1.GraphPane.XAxis.MinorGrid.IsVisible = false;
             zedGrapgControl1.RestoreScale(zedGrapgControl1.GraphPane);
-
             zedGrapgControl1.AxisChange();
             zedGrapgControl1.Invalidate();
         }
@@ -95,7 +93,7 @@ namespace SummerPr2022
                 PointPairList listMIN = new PointPairList();
                 PointPairList listMAX = new PointPairList();
 
-                LineItem d1 = my_Pane.AddCurve("Результат метода Эйлера", list, Color.Blue, SymbolType.Circle);
+                LineItem d1 = my_Pane.AddCurve("Результат метода Эйлера", list, Color.Blue, SymbolType.None);
                 textBox2.Text = maxNev.ToString();
                 zedGrapgControl1.AxisChange();
                 zedGrapgControl1.Invalidate();
@@ -108,18 +106,18 @@ namespace SummerPr2022
         private void Rez(ZedGraphControl Zed_GraphControl)//Построение графика точного решения
         {     
             int i;
-            double h1 = (double)(2.33 - a)/100D;
+            double h1 = (double)(2.329 - a)/100D;
             double[] coorX = new double[100 + 1];
             double[] coorY = new double[100 + 1];
             GraphPane my_Pane = Zed_GraphControl.GraphPane;
             PointPairList list2 = new PointPairList();
             for (i = 0; i < 100 + 1; i++)
             {
-                coorY[i] = 0 + i * h1;
+                coorY[i] = i * h1;
                 coorX[i] = f2(coorY[i]);
                 list2.Add(coorX[i], coorY[i]);
             }
-            LineItem myCircle = my_Pane.AddCurve("Точное решение", list2, Color.Red, SymbolType.Circle);
+            LineItem myCircle = my_Pane.AddCurve("Точное решение", list2, Color.Red, SymbolType.None);
             zedGrapgControl1.AxisChange();
             zedGrapgControl1.Invalidate();
         }

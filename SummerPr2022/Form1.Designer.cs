@@ -81,9 +81,9 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label4.Location = new System.Drawing.Point(508, 58);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(354, 24);
+            this.label4.Size = new System.Drawing.Size(350, 24);
             this.label4.TabIndex = 7;
-            this.label4.Text = "(3x²)dx-(x³+y+1)dy=0, y(1)=0, x∈ [1;2]";
+            this.label4.Text = "(3x²)∂x-(x³+y+1)∂y=0, y(1)=0, x∈ [1;2]";
             // 
             // textBox2
             // 
